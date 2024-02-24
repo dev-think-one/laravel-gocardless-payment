@@ -2,7 +2,7 @@
 
 namespace GoCardlessPayment\MandateCheckout;
 
-use GoCardlessPayment\GoCardless;
+use GoCardlessPayment\GoCardlessPayment;
 use GoCardlessPayment\Makeable;
 use GoCardlessPro\Client;
 
@@ -23,7 +23,7 @@ class MandateCheckoutPage
 
     public function __construct(BillingRequest $billingRequest, BillingRequestFlow $billingRequestFlow)
     {
-        $this->client = GoCardless::api()->client();
+        $this->client = GoCardlessPayment::api()->client();
 
         $this->billingRequest = $billingRequest;
         $this->billingRequestFlow = $billingRequestFlow;

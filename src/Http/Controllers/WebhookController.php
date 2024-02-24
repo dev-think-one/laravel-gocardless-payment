@@ -2,14 +2,11 @@
 
 namespace GoCardlessPayment\Http\Controllers;
 
-use GoCardlessPayment\Events\GoCardlessWebhookEventHandled;
 use GoCardlessPayment\Events\GoCardlessWebhookEventReceived;
-use GoCardlessPayment\GoCardless;
+use GoCardlessPayment\GoCardlessPayment;
 use GoCardlessPro\Resources\Event;
-use GoCardlessPro\Resources\Mandate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class WebhookController
@@ -46,30 +43,9 @@ class WebhookController
     {
         GoCardlessWebhookEventReceived::dispatch($event);
 
-        $method = 'handle'.Str::ucfirst(Str::camel($event->resource_type)).Str::ucfirst(Str::camel($event->action));
-
-        if (method_exists($this, $method)) {
-
-            try {
-                $response = $this->{$method}($event);
-
-                GoCardlessWebhookEventHandled::dispatch($event, ...$response);
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-            }
+        $jobClass = GoCardlessPayment::getWebhookJob("{$event->resource_type}-{$event->action}");
+        if ($jobClass) {
+            $jobClass::dispatch($event)->onQueue(config('gocardless-payment.queue'));
         }
-    }
-
-    protected function handleMandatesCreated(Event $event): array
-    {
-        /** @var Mandate $mandate */
-        $mandate = GoCardless::api()->client()->mandates()->get($event->links->mandate);
-
-        Log::debug(var_export($mandate, true));
-
-        return [
-            $mandate,
-            // TODO: add crated model
-        ];
     }
 }

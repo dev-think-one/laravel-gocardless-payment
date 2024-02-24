@@ -11,4 +11,10 @@ return [
         'webhook_endpoint_secret' => env('GOCARDLESS_WEBHOOK_ENDPOINT_SECRET'),
     ],
 
+    'queue' => env('GOCARDLESS_PAYMENT_QUEUE'),
+
+    'webhook_jobs' => [
+        'mandates-created' => \GoCardlessPayment\Jobs\MandateCreatedHandlerJob::class,
+    ],
+
 ];

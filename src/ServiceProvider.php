@@ -22,9 +22,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function register()
     {
-        $this->app->bind(GoCardlessPayment::class, function (Application $app) {
-            return new GoCardlessPayment();
-        });
         $this->app->bind(Api::class, function (Application $app) {
             return new Api();
         });

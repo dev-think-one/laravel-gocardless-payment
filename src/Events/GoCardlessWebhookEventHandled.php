@@ -12,8 +12,11 @@ class GoCardlessWebhookEventHandled
 
     public Event $event;
 
-    public function __construct(Event $event)
+    public array $args;
+
+    public function __construct(Event $event, ...$args)
     {
         $this->event = $event;
+        $this->args = $args;
     }
 }
