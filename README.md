@@ -15,8 +15,11 @@ Optionally you can publish the config file with:
 php artisan vendor:publish --provider="GoCardlessPayment\ServiceProvider" --tag="config"
 ```
 
+Place required credentials: 
+
 ```dotenv
 GOCARDLESS_ACCESS_TOKEN="sandbox_XxxxXXXxxxxXXXXxx-xXxxxXXx_XX-xxxX"
+GOCARDLESS_WEBHOOK_ENDPOINT_SECRET="XXXXxxxxXXXXXxxxXXXXxxxXXXXxx"
 ```
 
 ## Usage
@@ -48,6 +51,21 @@ $url = MandateCheckoutPage::make(
                 ->returnUrls(ReturnUrls::make('https://company.com/success', 'https://company.com/cancel'))
         )->requestCheckoutUrl();
 ```
+
+2. Second step is receive [webhook](https://developer.gocardless.com/resources/testing-webhooks-cli) about created
+   mandate and store it in database.
+
+2.1. Local usage
+
+Firstly install [cli](https://developer.gocardless.com/developer-tools/gc-cli) on your laptop.
+
+Then you can run listener with forwarding to your local site. Example:
+
+```shell
+gc listen --forward http://localhost/gocardless/webhook
+```
+
+
 
 ## Credits
 

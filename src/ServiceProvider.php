@@ -8,6 +8,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     public function boot()
     {
+        $this->registerRoutes();
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/gocardless-payment.php' => config_path('gocardless-payment.php'),
@@ -33,5 +35,19 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     protected function registerMigrations()
     {
         //
+    }
+
+    protected function registerRoutes(): void
+    {
+        if (! GoCardlessPayment::$useRoutes) {
+            return;
+        }
+
+        \Illuminate\Support\Facades\Route::group([
+            'prefix' => config('gocardless-payment.web.path_prefix'),
+            'as' => 'gocardless-payment.',
+        ], function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        });
     }
 }
