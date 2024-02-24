@@ -1,0 +1,58 @@
+{
+    "name": "think.studio/laravel-gocardless-payment",
+    "description": "GoCardless payment implementation for laravel",
+    "keywords": [
+        "laravel",
+        "gocardless"
+    ],
+    "homepage": "https://think.studio",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yaroslav Georgitsa",
+            "email": "yaroslav.georgitsa@gmail.com",
+            "homepage": "https://github.com/yaroslawww",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "gocardless/gocardless-pro": "^5.7",
+        "illuminate/support": "^9.0|^10.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.14",
+        "orchestra/testbench": "^8.0",
+        "phpunit/phpunit": "^10.0",
+        "psalm/plugin-laravel": "^2.8",
+        "vimeo/psalm": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "GoCardlessPayment\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GoCardlessPayment\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --stop-on-failure",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "format": "./vendor/bin/pint",
+        "psalm": "vendor/bin/psalm"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GoCardlessPayment\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
