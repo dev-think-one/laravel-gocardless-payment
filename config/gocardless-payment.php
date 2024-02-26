@@ -15,7 +15,22 @@ return [
 
     'webhook_jobs' => [
         'billing_requests.created' => \GoCardlessPayment\Jobs\BillingRequestCreatedHandlerJob::class,
-        'mandates.created' => \GoCardlessPayment\Jobs\MandateCreatedHandlerJob::class,
+
+        'mandates.created' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.customer_approval_granted' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.customer_approval_skipped' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.active' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.cancelled' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.failed' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.transferred' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.expired' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.submitted' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.resubmission_requested' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.reinstated' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.replaced' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.consumed' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+        'mandates.blocked' => \GoCardlessPayment\Jobs\MandateEventHandlerJob::class,
+
     ],
 
     'local_customer_repositories' => [
