@@ -2,7 +2,9 @@
 
 namespace GoCardlessPayment;
 
+use GoCardlessPayment\Contracts\LocalCustomerRepository;
 use GoCardlessPayment\Jobs\WebhookEventHandlerJob;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 
 class GoCardlessPayment
@@ -37,12 +39,18 @@ class GoCardlessPayment
      */
     public static function getWebhookJob(string $key): ?string
     {
-        $class = static::webhookJobsMap()[$key] ?? null;
+        $class = Arr::get(static::webhookJobsMap(), $key);
+
         if ($class && is_subclass_of($class, WebhookEventHandlerJob::class, true)) {
             return $class;
         }
 
         return null;
+    }
+
+    public static function localCustomerRepository(): LocalCustomerRepository
+    {
+        return App::make(LocalCustomerRepository::class);
     }
 
     public static function api(): Api

@@ -11,7 +11,7 @@ trait AsGoCardlessCustomer
 
     public function gocardlessKeyName(): string
     {
-        return 'gocardless_id';
+        return config('gocardless-payment.local_customer_repositories.eloquent.key');
     }
 
     public function gocardlessKey(): ?string
@@ -72,5 +72,16 @@ trait AsGoCardlessCustomer
     public function gocardlessCountryCode(): ?string
     {
         return $this->country_code ?? null;
+    }
+
+    public function setGocardlessKey(string $key): static
+    {
+        $this->fill([
+            $this->gocardlessKeyName() => $key,
+        ]);
+
+        $this->save();
+
+        return $this;
     }
 }

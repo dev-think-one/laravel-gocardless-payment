@@ -33,4 +33,6 @@ interface GoCardlessCustomer
     public function gocardlessRegion(): ?string;
 
     public function gocardlessCountryCode(): ?string;
+
+    public function setGocardlessKey(string $key): static;
 }

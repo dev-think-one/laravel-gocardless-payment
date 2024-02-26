@@ -43,7 +43,7 @@ class WebhookController
     {
         GoCardlessWebhookEventReceived::dispatch($event);
 
-        $jobClass = GoCardlessPayment::getWebhookJob("{$event->resource_type}-{$event->action}");
+        $jobClass = GoCardlessPayment::getWebhookJob("{$event->resource_type}.{$event->action}");
         if ($jobClass) {
             $jobClass::dispatch($event)->onQueue(config('gocardless-payment.queue'));
         }

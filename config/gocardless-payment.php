@@ -14,7 +14,15 @@ return [
     'queue' => env('GOCARDLESS_PAYMENT_QUEUE'),
 
     'webhook_jobs' => [
-        'mandates-created' => \GoCardlessPayment\Jobs\MandateCreatedHandlerJob::class,
+        'billing_requests.created' => \GoCardlessPayment\Jobs\BillingRequestCreatedHandlerJob::class,
+        'mandates.created' => \GoCardlessPayment\Jobs\MandateCreatedHandlerJob::class,
+    ],
+
+    'local_customer_repositories' => [
+        'eloquent' => [
+            'model' => 'App\\Models\\User',
+            'key' => 'gocardless_id',
+        ],
     ],
 
 ];

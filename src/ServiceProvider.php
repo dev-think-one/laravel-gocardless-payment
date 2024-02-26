@@ -2,6 +2,8 @@
 
 namespace GoCardlessPayment;
 
+use GoCardlessPayment\Contracts\LocalCustomerRepository;
+use GoCardlessPayment\Repositories\LocalCustomerEloquentRepository;
 use Illuminate\Contracts\Foundation\Application;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -22,11 +24,20 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function register()
     {
-        $this->app->bind(Api::class, function (Application $app) {
-            return new Api();
-        });
-
         $this->mergeConfigFrom(__DIR__.'/../config/gocardless-payment.php', 'gocardless-payment');
+
+        $this->app->singletonIf(LocalCustomerRepository::class, function (Application $app) {
+            return new LocalCustomerEloquentRepository(
+                config('gocardless-payment.local_customer_repositories.eloquent.model'),
+                config('gocardless-payment.local_customer_repositories.eloquent.key'),
+            );
+        });
+        $this->app->bindIf(Api::class, function (Application $app) {
+            return new Api(
+                config('gocardless-payment.access_token'),
+                config('gocardless-payment.environment'),
+            );
+        });
     }
 
     protected function registerMigrations()

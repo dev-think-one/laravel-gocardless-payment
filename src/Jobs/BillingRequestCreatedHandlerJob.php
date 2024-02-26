@@ -3,21 +3,33 @@
 namespace GoCardlessPayment\Jobs;
 
 use GoCardlessPayment\Events\GoCardlessWebhookEventHandled;
+use GoCardlessPayment\GoCardlessPayment;
 use Illuminate\Support\Facades\Log;
 
 class BillingRequestCreatedHandlerJob extends WebhookEventHandlerJob
 {
     public function handle()
     {
-        $gocardlessCustomerId = $this->event->links?->customer;
-        $crmContactId = $this->event->metadata?->crm_contact;
+        $metadataKeyName = GoCardlessPayment::$syncMetadataKeyName;
 
-        if (! $gocardlessCustomerId || ! $crmContactId) {
-            Log::debug('BillingRequestCreatedHandlerJob $event not contains required references to customer and crm_contact');
+        $gocardlessCustomerId = $this->event->links?->customer;
+        $syncKey = $this->event->metadata?->$metadataKeyName;
+
+        if (! $gocardlessCustomerId || ! $syncKey) {
+            Log::debug("BillingRequestCreatedHandlerJob event object not contains required references to customer or {$metadataKeyName}");
+
+            return;
         }
 
-        // TODO: add customer to model
+        $localCustomer = GoCardlessPayment::localCustomerRepository()->findLocalCustomerBySyncKey($syncKey);
+        if (! $localCustomer) {
+            Log::debug("Local customer not found to attach key [{$metadataKeyName}:{$syncKey}]");
 
-        GoCardlessWebhookEventHandled::dispatch($this->event/*TODO: add contact model*/);
+            return;
+        }
+
+        $localCustomer->setGocardlessKey($gocardlessCustomerId);
+
+        GoCardlessWebhookEventHandled::dispatch($this->event, $localCustomer);
     }
 }
