@@ -2,9 +2,11 @@
 
 namespace GoCardlessPayment\MandateCheckout;
 
+use GoCardlessPayment\Contracts\GoCardlessCustomer;
 use GoCardlessPayment\GoCardlessPayment;
 use GoCardlessPayment\Makeable;
 use GoCardlessPro\Client;
+use Illuminate\Support\Arr;
 
 /**
  * Builder encapsulate all requests exchanges to create checkout page url for Mandate creation.
@@ -16,6 +18,8 @@ class MandateCheckoutPage
     use Makeable;
 
     protected Client $client;
+
+    protected ?GoCardlessCustomer $gocardlessCustomer = null;
 
     protected BillingRequest $billingRequest;
 
@@ -29,13 +33,39 @@ class MandateCheckoutPage
         $this->billingRequestFlow = $billingRequestFlow;
     }
 
+    public function useCustomer(GoCardlessCustomer $gocardlessCustomer): static
+    {
+        $this->gocardlessCustomer = $gocardlessCustomer;
+
+        return $this;
+    }
+
     /**
      * @throws \GoCardlessPro\Core\Exception\InvalidStateException
      */
     protected function sendBillingRequest(): \GoCardlessPro\Resources\BillingRequest
     {
+        $params = $this->billingRequest->jsonSerialize();
+        if ($this->gocardlessCustomer) {
+            $keyName = GoCardlessPayment::$syncMetadataKeyName;
+
+            Arr::set($params, "metadata.{$keyName}", $this->gocardlessCustomer->getSyncKey());
+            if ($gocardlessKey = $this->gocardlessCustomer->gocardlessKey()) {
+                Arr::set($params, 'links.customer', $gocardlessKey);
+            }
+
+            // Additionally we provide sync keys in mandate and payment requests for more informational object
+            // inside GoCardless dashboard
+            if (Arr::has($params, 'mandate_request')) {
+                Arr::set($params, "mandate_request.metadata.{$keyName}", $this->gocardlessCustomer->getSyncKey());
+            }
+            if (Arr::has($params, 'payment_request')) {
+                Arr::set($params, "payment_request.metadata.{$keyName}", $this->gocardlessCustomer->getSyncKey());
+            }
+        }
+
         return $this->client->billingRequests()->create([
-            'params' => $this->billingRequest->jsonSerialize(),
+            'params' => $params,
         ]);
     }
 
@@ -44,6 +74,22 @@ class MandateCheckoutPage
      */
     protected function sendBillingFlowRequest(string $billingResponseId): \GoCardlessPro\Resources\BillingRequestFlow
     {
+        if ($this->gocardlessCustomer) {
+            $this->billingRequestFlow->prefilledCustomer(
+                PrefilledCustomer::make()
+                    ->givenName($this->gocardlessCustomer->gocardlessGivenName())
+                    ->familyName($this->gocardlessCustomer->gocardlessFamilyName())
+                    ->email($this->gocardlessCustomer->gocardlessEmail())
+                    ->postalCode($this->gocardlessCustomer->gocardlessPostalCode())
+                    ->addressLine1($this->gocardlessCustomer->gocardlessAddressLine1())
+                    ->addressLine2($this->gocardlessCustomer->gocardlessAddressLine2())
+                    ->addressLine3($this->gocardlessCustomer->gocardlessAddressLine3())
+                    ->city($this->gocardlessCustomer->gocardlessCity())
+                    ->region($this->gocardlessCustomer->gocardlessRegion())
+                    ->countryCode($this->gocardlessCustomer->gocardlessCountryCode())
+            );
+        }
+
         return $this->client->billingRequestFlows()->create([
             'params' => $this->billingRequestFlow->setBillingRequestId($billingResponseId)->jsonSerialize(),
         ]);

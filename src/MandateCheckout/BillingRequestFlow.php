@@ -15,7 +15,7 @@ class BillingRequestFlow implements \JsonSerializable
 
     protected ?ReturnUrls $returnUrls = null;
 
-    protected ?PredefinedCustomer $predefinedCustomer = null;
+    protected ?PrefilledCustomer $prefilledCustomer = null;
 
     public function __construct(array $params = [])
     {
@@ -29,9 +29,9 @@ class BillingRequestFlow implements \JsonSerializable
         return $this;
     }
 
-    public function predefinedCustomer(?PredefinedCustomer $predefinedCustomer): static
+    public function prefilledCustomer(?PrefilledCustomer $prefilledCustomer): static
     {
-        $this->predefinedCustomer = $predefinedCustomer;
+        $this->prefilledCustomer = $prefilledCustomer;
 
         return $this;
     }
@@ -61,8 +61,8 @@ class BillingRequestFlow implements \JsonSerializable
             $params['language'] = $this->language;
         }
 
-        if ($this->predefinedCustomer) {
-            $params['predefined_customer'] = $this->predefinedCustomer->jsonSerialize();
+        if ($this->prefilledCustomer) {
+            $params['prefilled_customer'] = $this->prefilledCustomer->jsonSerialize();
         }
 
         return array_merge($this->params, $params);

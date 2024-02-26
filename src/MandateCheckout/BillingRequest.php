@@ -16,6 +16,8 @@ class BillingRequest implements \JsonSerializable
 
     protected ?Metadata $metadata = null;
 
+    protected ?Links $links = null;
+
     public function __construct(array $params = [])
     {
         $this->params = $params;
@@ -45,6 +47,13 @@ class BillingRequest implements \JsonSerializable
         return $this;
     }
 
+    public function links(?Links $links): static
+    {
+        $this->links = $links;
+
+        return $this;
+    }
+
     public function jsonSerialize(): array
     {
         $params = [];
@@ -61,6 +70,10 @@ class BillingRequest implements \JsonSerializable
             $params['metadata'] = $this->metadata->jsonSerialize();
         }
 
-        return array_merge($this->params, $params);
+        if ($this->links) {
+            $params['links'] = $this->links->jsonSerialize();
+        }
+
+        return array_merge($this->params, array_filter($params, fn ($i) => ! is_null($i) && (is_array($i) && ! empty($i))));
     }
 }

@@ -4,7 +4,7 @@ namespace GoCardlessPayment\MandateCheckout;
 
 use GoCardlessPayment\Makeable;
 
-class PredefinedCustomer implements \JsonSerializable
+class PrefilledCustomer implements \JsonSerializable
 {
     use Makeable;
 
@@ -46,7 +46,7 @@ class PredefinedCustomer implements \JsonSerializable
         return $this;
     }
 
-    public function setFamilyName(?string $familyName): static
+    public function familyName(?string $familyName): static
     {
         $this->familyName = $familyName;
 
@@ -55,14 +55,17 @@ class PredefinedCustomer implements \JsonSerializable
         return $this;
     }
 
-    public function setEmail(?string $email): static
+    public function email(?string $email): static
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function setCompanyName(?string $companyName): static
+    /**
+     * WARNING: Company name overrides first and last name.
+     */
+    public function companyName(?string $companyName): static
     {
         $this->companyName = $companyName;
 
@@ -72,49 +75,49 @@ class PredefinedCustomer implements \JsonSerializable
         return $this;
     }
 
-    public function setCity(?string $city): static
+    public function city(?string $city): static
     {
         $this->city = $city;
 
         return $this;
     }
 
-    public function setAddressLine1(?string $addressLine1): static
+    public function addressLine1(?string $addressLine1): static
     {
         $this->addressLine1 = $addressLine1;
 
         return $this;
     }
 
-    public function setAddressLine2(?string $addressLine2): static
+    public function addressLine2(?string $addressLine2): static
     {
         $this->addressLine2 = $addressLine2;
 
         return $this;
     }
 
-    public function setAddressLine3(?string $addressLine3): static
+    public function addressLine3(?string $addressLine3): static
     {
         $this->addressLine3 = $addressLine3;
 
         return $this;
     }
 
-    public function setRegion(?string $region): static
+    public function region(?string $region): static
     {
         $this->region = $region;
 
         return $this;
     }
 
-    public function setPostalCode(?string $postalCode): static
+    public function postalCode(?string $postalCode): static
     {
         $this->postalCode = $postalCode;
 
         return $this;
     }
 
-    public function setCountryCode(?string $countryCode): static
+    public function countryCode(?string $countryCode): static
     {
         $this->countryCode = $countryCode;
 

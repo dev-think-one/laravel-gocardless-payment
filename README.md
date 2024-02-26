@@ -39,17 +39,60 @@ use GoCardlessPayment\MandateCheckout\MandateRequest;
 use GoCardlessPayment\MandateCheckout\Metadata;
 use GoCardlessPayment\MandateCheckout\ReturnUrls;
 
+/** @var \GoCardlessPayment\Contracts\GoCardlessCustomer $user */
+$user = getCurrentUser();
+
 $url = MandateCheckoutPage::make(
             BillingRequest::make()
                 ->mandateRequest(
                     MandateRequest::make()
                         ->scheme('bacs')
                         ->verifyWhenAvailable()
-                        ->metadata(Metadata::make()->add('site_user_id', '222')),
                 ),
             BillingRequestFlow::make()
-                ->returnUrls(ReturnUrls::make('https://company.com/success', 'https://company.com/cancel'))
+                ->returnUrls(ReturnUrls::make(route('example.route')))
+        )->useCustomer($user)->requestCheckoutUrl();
+
+return Redirect::to($url);
+```
+
+Or fully managed request:
+
+```php
+use GoCardlessPayment\MandateCheckout\BillingRequest;
+use GoCardlessPayment\MandateCheckout\BillingRequestFlow;
+use GoCardlessPayment\MandateCheckout\MandateCheckoutPage;
+use GoCardlessPayment\MandateCheckout\MandateRequest;
+use GoCardlessPayment\MandateCheckout\Metadata;
+use GoCardlessPayment\MandateCheckout\ReturnUrls;
+
+$url = MandateCheckoutPage::make(
+            BillingRequest::make()
+                ->mandateRequest(
+                    MandateRequest::make()
+                        ->scheme('bacs')
+                        ->verifyWhenAvailable()
+                )->metadata(
+                    Metadata::make()
+                        ->add('crm_user', $user->getKey())
+                )->links(Links::make()->addCustomer($user->gocardlessKey())),
+            BillingRequestFlow::make()
+                ->prefilledCustomer(
+                    PrefilledCustomer::make()
+                        ->givenName($user->first_name)
+                        ->familyName($user->last_name)
+                        ->email($user->email)
+                        ->postalCode($user->postalcode)
+                        ->addressLine1($user->street)
+                        ->addressLine2($user->locality)
+                        ->city($user->town)
+                        ->region($user->county)
+                        ->countryCode($user->country_code)
+                )
+                ->returnUrls(ReturnUrls::make(route('example.route')))
         )->requestCheckoutUrl();
+
+return Redirect::to($url);
 ```
 
 2. Second step is receive [webhook](https://developer.gocardless.com/resources/testing-webhooks-cli) about created
@@ -63,6 +106,8 @@ Then you can run listener with forwarding to your local site. Example:
 
 ```shell
 gc listen --forward http://localhost/gocardless/webhook
+# Or to jus preview webhooks content without real processing by app you can use "simple" listen method:
+# gc listen
 ```
 
 

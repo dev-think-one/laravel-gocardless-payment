@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\App;
 
 class GoCardlessPayment
 {
+    public static string $syncMetadataKeyName = 'crm_id';
+
     public static bool $useRoutes = true;
 
     public static array $webhookJobsMap = [];
