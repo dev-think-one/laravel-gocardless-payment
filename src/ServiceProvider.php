@@ -17,6 +17,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 __DIR__.'/../config/gocardless-payment.php' => config_path('gocardless-payment.php'),
             ], 'config');
 
+            $this->publishes([
+                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
+            ], 'migrations');
+
             $this->registerMigrations();
         }
 
@@ -40,9 +44,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         });
     }
 
-    protected function registerMigrations()
+    protected function registerMigrations(): void
     {
-        //
+        if (GoCardlessPayment::$runsMigrations) {
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        }
     }
 
     protected function registerRoutes(): void

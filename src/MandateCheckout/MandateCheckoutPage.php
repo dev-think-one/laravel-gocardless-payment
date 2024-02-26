@@ -2,10 +2,10 @@
 
 namespace GoCardlessPayment\MandateCheckout;
 
+use GoCardlessPayment\Api;
 use GoCardlessPayment\Contracts\GoCardlessCustomer;
 use GoCardlessPayment\GoCardlessPayment;
 use GoCardlessPayment\Makeable;
-use GoCardlessPro\Client;
 use Illuminate\Support\Arr;
 
 /**
@@ -17,7 +17,7 @@ class MandateCheckoutPage
 {
     use Makeable;
 
-    protected Client $client;
+    protected Api $client;
 
     protected ?GoCardlessCustomer $gocardlessCustomer = null;
 
@@ -27,7 +27,7 @@ class MandateCheckoutPage
 
     public function __construct(BillingRequest $billingRequest, BillingRequestFlow $billingRequestFlow)
     {
-        $this->client = GoCardlessPayment::api()->client();
+        $this->client = GoCardlessPayment::api();
 
         $this->billingRequest = $billingRequest;
         $this->billingRequestFlow = $billingRequestFlow;

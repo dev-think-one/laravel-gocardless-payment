@@ -13,11 +13,20 @@ class GoCardlessPayment
 
     public static bool $useRoutes = true;
 
+    public static bool $runsMigrations = true;
+
     public static array $webhookJobsMap = [];
 
     public static function ignoreRoutes(): static
     {
         static::$useRoutes = false;
+
+        return new static;
+    }
+
+    public static function ignoreMigrations(): static
+    {
+        static::$runsMigrations = false;
 
         return new static;
     }

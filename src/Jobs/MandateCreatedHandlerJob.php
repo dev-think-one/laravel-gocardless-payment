@@ -10,7 +10,7 @@ class MandateCreatedHandlerJob extends WebhookEventHandlerJob
 {
     public function handle()
     {
-        $mandate = GoCardlessPayment::api()->client()->mandates()->get($this->event->links->mandate);
+        $mandate = GoCardlessPayment::api()->mandates()->get($this->event->links->mandate);
 
         Log::debug(var_export($mandate, true));
 

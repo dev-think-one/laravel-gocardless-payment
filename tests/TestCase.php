@@ -2,13 +2,14 @@
 
 namespace GoCardlessPayment\Tests;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use GoCardlessPayment\Tests\Fixtures\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\Database\MigrateProcessor;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected function getPackageProviders($app)
     {
@@ -38,6 +39,6 @@ class TestCase extends Orchestra
             'prefix' => '',
         ]);
 
-        // $app['config']->set('fmc-naviga.some_key', 'some_value');
+        $app['config']->set('gocardless-payment.local_customer_repositories.eloquent.model', User::class);
     }
 }

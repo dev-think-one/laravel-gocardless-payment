@@ -4,6 +4,9 @@ namespace GoCardlessPayment;
 
 use GoCardlessPro\Client;
 
+/**
+ * @extends Client
+ */
 class Api
 {
     protected Client $client;
@@ -16,8 +19,13 @@ class Api
         ]);
     }
 
-    public function client(): Client
+    public function originalClient(): Client
     {
         return $this->client;
+    }
+
+    public function __call($method, $parameters)
+    {
+        return $this->client->{$method}(...$parameters);
     }
 }

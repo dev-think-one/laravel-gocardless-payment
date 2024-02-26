@@ -20,7 +20,7 @@ return [
 
     'local_customer_repositories' => [
         'eloquent' => [
-            'model' => 'App\\Models\\User',
+            'model' => env('GOCARDLESS_ELOQUENT_LOCAL_REPO_MODEL', 'App\\Models\\User'),
             'key' => 'gocardless_id',
         ],
     ],

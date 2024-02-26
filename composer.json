@@ -29,7 +29,8 @@
     },
     "autoload": {
         "psr-4": {
-            "GoCardlessPayment\\": "src"
+            "GoCardlessPayment\\": "src",
+            "GoCardlessPayment\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
