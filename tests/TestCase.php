@@ -40,5 +40,6 @@ class TestCase extends Orchestra
         ]);
 
         $app['config']->set('gocardless-payment.local_customer_repositories.eloquent.model', User::class);
+        $app['config']->set('gocardless-payment.web.webhook_endpoint_secret', 'foo-bar');
     }
 }

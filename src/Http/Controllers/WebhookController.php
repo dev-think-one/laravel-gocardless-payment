@@ -29,7 +29,7 @@ class WebhookController
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
-            throw $e;
+            return new Response($e->getMessage(), 500);
         }
 
         foreach ($events as $event) {

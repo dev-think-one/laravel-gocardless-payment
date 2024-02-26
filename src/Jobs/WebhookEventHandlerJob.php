@@ -13,7 +13,7 @@ abstract class WebhookEventHandlerJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected Event $event;
+    public Event $event;
 
     public function __construct(Event $event)
     {
