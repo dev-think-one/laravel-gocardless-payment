@@ -1,5 +1,12 @@
 # GoCardless payment implementation for laravel
 
+![Packagist License](https://img.shields.io/packagist/l/think.studio/laravel-gocardless-payment?color=%234dc71f)
+[![Packagist Version](https://img.shields.io/packagist/v/think.studio/laravel-gocardless-payment)](https://packagist.org/packages/think.studio/laravel-gocardless-payment)
+[![Total Downloads](https://img.shields.io/packagist/dt/think.studio/laravel-gocardless-payment)](https://packagist.org/packages/think.studio/laravel-gocardless-payment)
+[![Build Status](https://scrutinizer-ci.com/g/dev-think-one/laravel-gocardless-payment/badges/build.png?b=main)](https://scrutinizer-ci.com/g/dev-think-one/laravel-gocardless-payment/build-status/main)
+[![Code Coverage](https://scrutinizer-ci.com/g/dev-think-one/laravel-gocardless-payment/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/dev-think-one/laravel-gocardless-payment/?branch=main)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dev-think-one/laravel-gocardless-payment/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/dev-think-one/laravel-gocardless-payment/?branch=main)
+
 Highly targeted package created for specific usage case and not support/maintain all options of GoCardless. Package is
 based on official php [package](https://github.com/gocardless/gocardless-pro-php)
 
@@ -54,7 +61,7 @@ public function register()
 **Note**: to use api requests your server IP should be in country covered by GoCardless service, in other case api
 requests will fail (you can try use VPN for local test/development)
 
-## Create mandate checkput url
+### Create mandate checkout url
 
 As first step server should
 generate [mandate](https://developer.gocardless.com/billing-requests/setting-up-a-dd-mandate) url and redirect user
@@ -139,6 +146,16 @@ Then you can run listener with forwarding to your local site. Example:
 gc listen --forward http://localhost/gocardless/webhook
 # Or to jus preview webhooks content without real processing by app you can use "simple" listen method:
 # gc listen
+```
+
+### Cli commands
+
+#### Import mandates 
+
+*Note:* if local storage not contains related to mandate "customer" import will be skipped.
+
+```shell
+php artisan gocardless-payment:import:mandate MD123FOOBAR
 ```
 
 ## Credits
