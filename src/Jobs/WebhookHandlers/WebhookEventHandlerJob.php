@@ -1,6 +1,6 @@
 <?php
 
-namespace GoCardlessPayment\Jobs;
+namespace GoCardlessPayment\Jobs\WebhookHandlers;
 
 use GoCardlessPro\Resources\Event;
 use Illuminate\Bus\Queueable;

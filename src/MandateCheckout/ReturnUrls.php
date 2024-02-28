@@ -25,7 +25,7 @@ class ReturnUrls implements \JsonSerializable
     {
         return array_filter([
             'redirect_uri' => $this->successUrl,
-            'exit_uri' => $this->successUrl ?: $this->cancelUrl,
+            'exit_uri' => $this->cancelUrl ?: $this->successUrl,
         ], fn ($i) => ! is_null($i));
     }
 }

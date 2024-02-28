@@ -6,7 +6,7 @@ use GoCardlessPayment\Api;
 use GoCardlessPayment\Events\GoCardlessWebhookEventHandled;
 use GoCardlessPayment\Events\GoCardlessWebhookEventReceived;
 use GoCardlessPayment\Models\GoCardlessMandate;
-use GoCardlessPro\Resources\Mandate;
+use GoCardlessPayment\Tests\Fixtures\Models\User;
 use GoCardlessPro\Services\MandatesService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
@@ -46,6 +46,8 @@ class MandateEventHandlerJobTest extends WebhookTestCase
     /** @test */
     public function webhook_creates_row()
     {
+        User::factory()->withCustomerId(Arr::get($this->mandateResponse, 'links.customer'))->create();
+
         $this->instance(
             Api::class,
             Mockery::mock(Api::class, function (MockInterface $mock) {
@@ -88,18 +90,12 @@ class MandateEventHandlerJobTest extends WebhookTestCase
             return $event->event->id === 'EV02H8ZGCY3SRV';
         });
         Event::assertDispatched(function (GoCardlessWebhookEventHandled $event) {
+            $this->assertCount(1, $event->args);
 
-            $this->assertCount(2, $event->args);
-
-            $this->assertInstanceOf(Mandate::class, $event->args[0]);
-            /** @var Mandate $mandateResponse */
-            $mandateResponse = $event->args[0];
-
-            $this->assertInstanceOf(GoCardlessMandate::class, $event->args[1]);
+            $this->assertInstanceOf(GoCardlessMandate::class, $event->args[0]);
             /** @var GoCardlessMandate $mandateModel */
-            $mandateModel = $event->args[1];
+            $mandateModel = $event->args[0];
 
-            $this->assertEquals(Arr::get($this->mandateResponse, 'id'), $mandateResponse->id);
             $this->assertEquals(Arr::get($this->mandateResponse, 'id'), $mandateModel->getKey());
             $this->assertTrue($mandateModel->exists);
 
@@ -110,6 +106,8 @@ class MandateEventHandlerJobTest extends WebhookTestCase
     /** @test */
     public function webhook_override_row()
     {
+        User::factory()->withCustomerId(Arr::get($this->mandateResponse, 'links.customer'))->create();
+
         $model = GoCardlessMandate::factory()->create(['id' => Arr::get($this->mandateResponse, 'id')]);
 
         $this->assertEquals(1, GoCardlessMandate::count());
@@ -156,18 +154,12 @@ class MandateEventHandlerJobTest extends WebhookTestCase
             return $event->event->id === 'EV02H8ZGCY3SRV';
         });
         Event::assertDispatched(function (GoCardlessWebhookEventHandled $event) {
+            $this->assertCount(1, $event->args);
 
-            $this->assertCount(2, $event->args);
-
-            $this->assertInstanceOf(Mandate::class, $event->args[0]);
-            /** @var Mandate $mandateResponse */
-            $mandateResponse = $event->args[0];
-
-            $this->assertInstanceOf(GoCardlessMandate::class, $event->args[1]);
+            $this->assertInstanceOf(GoCardlessMandate::class, $event->args[0]);
             /** @var GoCardlessMandate $mandateModel */
-            $mandateModel = $event->args[1];
+            $mandateModel = $event->args[0];
 
-            $this->assertEquals(Arr::get($this->mandateResponse, 'id'), $mandateResponse->id);
             $this->assertEquals(Arr::get($this->mandateResponse, 'id'), $mandateModel->getKey());
             $this->assertTrue($mandateModel->exists);
 
@@ -179,5 +171,52 @@ class MandateEventHandlerJobTest extends WebhookTestCase
         $model->refresh();
 
         $this->assertEquals(Arr::get($this->mandateResponse, 'links.customer'), $model->customer_id);
+    }
+
+    /** @test */
+    public function webhook_not_processed_if_customer_not_exists_in_local_storage()
+    {
+        $this->instance(
+            Api::class,
+            Mockery::mock(Api::class, function (MockInterface $mock) {
+                $mock->shouldReceive('mandates')->andReturn(
+                    Mockery::mock(MandatesService::class, function (MockInterface $mock) {
+                        $mock->shouldReceive('get')
+                            ->withArgs(function (string $id) {
+                                return $id === Arr::get($this->mandateResponse, 'id');
+                            })->andReturn(new \GoCardlessPro\Resources\Mandate((object) $this->mandateResponse));
+
+                    })
+
+                );
+            })
+        );
+
+        $this->postJson('gocardless/webhook', [
+            'events' => [
+                [
+                    'id' => 'EV02H8ZGCY3SRV',
+                    'resource_type' => 'mandates',
+                    'action' => 'created',
+                    'created_at' => '2024-02-26T12:52:40.430Z',
+                    'metadata' => [
+                        'foo' => 'bar',
+                    ],
+                    'links' => [
+                        'mandate' => Arr::get($this->mandateResponse, 'id'),
+                    ],
+                    'details' => [
+                        'cause' => 'mandate_created',
+                        'description' => 'Example',
+                        'origin' => 'api',
+                    ],
+                ],
+            ],
+        ]);
+
+        Event::assertDispatched(function (GoCardlessWebhookEventReceived $event) {
+            return $event->event->id === 'EV02H8ZGCY3SRV';
+        });
+        Event::assertNotDispatched(GoCardlessWebhookEventHandled::class);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace GoCardlessPayment\Jobs;
+namespace GoCardlessPayment\Jobs\WebhookHandlers;
 
 use GoCardlessPayment\Events\GoCardlessWebhookEventHandled;
 use GoCardlessPayment\GoCardlessPayment;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class BillingRequestCreatedHandlerJob extends WebhookEventHandlerJob
 {
-    public function handle()
+    public function handle(): void
     {
         $metadataKeyName = GoCardlessPayment::$syncMetadataKeyName;
 

@@ -65,6 +65,10 @@ class BillingRequestFlow implements \JsonSerializable
             $params['prefilled_customer'] = $this->prefilledCustomer->jsonSerialize();
         }
 
+        if ($this->returnUrls) {
+            $params = array_merge($params, $this->returnUrls->jsonSerialize());
+        }
+
         return array_merge($this->params, $params);
     }
 }

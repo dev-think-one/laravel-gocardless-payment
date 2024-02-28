@@ -2,6 +2,7 @@
 
 namespace GoCardlessPayment\Tests\Webhook;
 
+use GoCardlessPayment\GoCardlessPayment;
 use GoCardlessPayment\Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 
@@ -38,5 +39,13 @@ class ErrorOnWrongSecretTest extends TestCase
                 ],
             ],
         ]);
+    }
+
+    /** @test */
+    public function webhook_job_map_returns_null_if_not_found()
+    {
+        $this->assertEquals(\GoCardlessPayment\Jobs\WebhookHandlers\MandateEventHandlerJob::class, GoCardlessPayment::getWebhookJob('mandates.active'));
+
+        $this->assertNull(GoCardlessPayment::getWebhookJob('mandates.fake'));
     }
 }

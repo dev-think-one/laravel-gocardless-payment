@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('gocardless_mandates', function (Blueprint $table) {
+        Schema::create(config('gocardless-payment.tables.mandates'), function (Blueprint $table) {
             $table->string('id', 50)->primary()->index();
             $table->string('customer_id', 50)->index();
             $table->string('creditor_id', 50)->nullable()->index();
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('gocardless_mandates');
+        Schema::dropIfExists(config('gocardless-payment.tables.mandates'));
     }
 };

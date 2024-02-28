@@ -5,8 +5,10 @@ namespace GoCardlessPayment\Tests\MandateCheckout;
 use GoCardlessPayment\Api;
 use GoCardlessPayment\MandateCheckout\BillingRequest;
 use GoCardlessPayment\MandateCheckout\BillingRequestFlow;
+use GoCardlessPayment\MandateCheckout\Links;
 use GoCardlessPayment\MandateCheckout\MandateCheckoutPage;
 use GoCardlessPayment\MandateCheckout\MandateRequest;
+use GoCardlessPayment\MandateCheckout\Metadata;
 use GoCardlessPayment\MandateCheckout\ReturnUrls;
 use GoCardlessPayment\Tests\Fixtures\Models\User;
 use GoCardlessPayment\Tests\TestCase;
@@ -42,10 +44,12 @@ class MandateCheckoutPageWithPrefilledCustomerTest extends TestCase
                                 $this->assertEquals('bacs', Arr::get($data, 'params.mandate_request.scheme'));
                                 $this->assertEquals('when_available', Arr::get($data, 'params.mandate_request.verify'));
                                 $this->assertEquals($this->user->getKey(), Arr::get($data, 'params.mandate_request.metadata.crm_id'));
+                                $this->assertEquals('bar', Arr::get($data, 'params.mandate_request.metadata.foo'));
 
                                 $this->assertEquals($this->user->getKey(), Arr::get($data, 'params.metadata.crm_id'));
 
                                 $this->assertEquals($this->user->gocardlessKey(), Arr::get($data, 'params.links.customer'));
+                                $this->assertEquals('baz', Arr::get($data, 'params.links.customer_bank_account'));
 
                                 return true;
                             })->andReturn(new \GoCardlessPro\Resources\BillingRequest((object) ['id' => 'REQ123FOO']));
@@ -71,6 +75,9 @@ class MandateCheckoutPageWithPrefilledCustomerTest extends TestCase
                                 $this->assertEquals($this->user->gocardlessPostalCode(), Arr::get($data, 'params.prefilled_customer.postal_code'));
                                 $this->assertEquals($this->user->gocardlessCountryCode(), Arr::get($data, 'params.prefilled_customer.country_code'));
 
+                                $this->assertEquals('https://success.link', Arr::get($data, 'params.redirect_uri'));
+                                $this->assertEquals('https://exit.one', Arr::get($data, 'params.exit_uri'));
+
                                 return true;
                             })->andReturn(new \GoCardlessPro\Resources\BillingRequestFlow((object) ['authorisation_url' => 'http://foo.bar/baz']));
                     })
@@ -84,7 +91,9 @@ class MandateCheckoutPageWithPrefilledCustomerTest extends TestCase
                     MandateRequest::make()
                         ->scheme('bacs')
                         ->verifyWhenAvailable()
-                ),
+                        ->metadata(Metadata::make()->add('foo', 'bar'))
+                )
+                ->links(Links::make()->addCustomerBankAccount('baz')),
             BillingRequestFlow::make()
                 ->returnUrls(ReturnUrls::make('https://success.link', 'https://exit.one'))
         )->useCustomer($this->user)->requestCheckoutUrl();

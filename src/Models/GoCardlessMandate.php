@@ -14,13 +14,16 @@ class GoCardlessMandate extends Model
 
     protected $keyType = 'string';
 
-    protected $table = 'gocardless_mandates';
-
     protected $guarded = [];
 
     protected $casts = [
         'data' => 'array',
     ];
+
+    public function getTable()
+    {
+        return config('gocardless-payment.tables.mandates');
+    }
 
     protected static function newFactory(): GoCardlessMandateFactory
     {

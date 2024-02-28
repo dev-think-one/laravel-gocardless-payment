@@ -2,6 +2,7 @@
 
 namespace GoCardlessPayment;
 
+use GoCardlessPayment\Console\Commands\ImportMandate;
 use GoCardlessPayment\Contracts\LocalCustomerRepository;
 use GoCardlessPayment\Repositories\LocalCustomerEloquentRepository;
 use Illuminate\Contracts\Foundation\Application;
@@ -22,6 +23,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             ], 'migrations');
 
             $this->registerMigrations();
+
+            $this->commands([
+                ImportMandate::class,
+            ]);
         }
 
     }
